@@ -2,90 +2,104 @@ import tkinter as tk
 import sqlite3
 
 def create_task_table():
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute('''CREATE TABLE IF NOT EXISTS tasks
-                 (id INTEGER PRIMARY KEY,
-                  name TEXT NOT NULL,
-                  description TEXT,
-                  due_date DATE,
-                  priority INTEGER)''')
-    conn.commit()
-    conn.close()
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS mytasks
+                (id INTEGER PRIMARY KEY, 
+                name TEXT NOT NULL,
+                description TEXT,
+                start_date DATE,
+                due_date DATE,
+                priority INTEGER)''')
+    my_tasks.commit()
+    my_tasks.close()
 
-def add_task(name, description, due_date, priority):
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute("INSERT INTO tasks (name, description, due_date, priority) VALUES (?, ?, ?, ?)", (name, description, due_date, priority))
-    conn.commit()
-    conn.close()
+def add_task(name, description, start_date, due_date, priority):
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("INSERT INTO mytasks (name, description, start_date, due_date, priority) VALUES (?, ?, ?, ?, ?)", (name, description, start_date, due_date, priority))
+    my_tasks.commit()
+    my_tasks.close()
 
 def delete_task(id):
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute("DELETE FROM tasks WHERE id=?", (id,))
-    conn.commit()
-    conn.close()
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("DELETE FROM mytasks WHERE id=?", (id,))
+    my_tasks.commit()
+    my_tasks.close()
 
-def edit_task(id, name, description, due_date, priority):
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute("UPDATE tasks SET name=?, description=?, due_date=?, priority=? WHERE id=?", (name, description, due_date, priority, id))
-    conn.commit()
-    conn.close()
+def edit_task(id, name, description, start_date, due_date, priority):
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("UPDATE mytasks SET name=?, description=?, start_date=?, due_date=?, priority=? WHERE id=?", (name, description, start_date, due_date, priority, id))
+    my_tasks.commit()
+    my_tasks.close()
 
-def view_tasks():
-    conn = sqlite3.connect('tasks.db')
-    c = conn.cursor()
-    c.execute("SELECT * FROM tasks")
-    tasks = c.fetchall()
-    conn.close()
-    return tasks
+def view_task():
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("SELECT * FROM mytasks")
+    mytasks = c.fetchall()
+    my_tasks.close()
+    return mytasks
 
 def main():
     create_task_table()
 
-    # Create a window
+    # Create window
     window = tk.Tk()
-    window.title("To-Do List Manager")
+    window.title("DailyTasks")
 
     # Create widgets
-    label = tk.Label(window, text="Welcome to your To-Do List Manager!")
+    label = tk.Label(window, text="Welcome, I am here to help you manage your tasks with Deadlines and Reminders. YOU CAN DO IT!! :)")
     label.pack()
 
-    name_label = tk.Label(window, text="Task Name:")
+    # Create task name
+    name_label = tk.Label(window, text="New task name: ")
     name_label.pack()
     name_entry = tk.Entry(window)
     name_entry.pack()
 
-    description_label = tk.Label(window, text="Task Description:")
+    # Create task details
+    description_label = tk.Label(window, text="Let's keep some details of the task to help us remember!: ")
     description_label.pack()
     description_entry = tk.Entry(window)
     description_entry.pack()
 
-    due_date_label = tk.Label(window, text="Due Date:")
+    # Create start_date
+    start_date_label = tk.Label(window, text="Start date: ")
+    start_date_label.pack()
+    start_date_entry = tk.Entry(window)
+    start_date_entry.pack()
+
+    # Create due_date
+    due_date_label = tk.Label(window, text="Due date: ")
     due_date_label.pack()
     due_date_entry = tk.Entry(window)
     due_date_entry.pack()
 
-    priority_label = tk.Label(window, text="Priority:")
+    # Create priority
+    priority_label = tk.Label(window, text="Priority")
     priority_label.pack()
     priority_entry = tk.Entry(window)
     priority_entry.pack()
 
-    add_button = tk.Button(window, text="Add Task", command=lambda: add_task(name_entry.get(), description_entry.get(), due_date_entry.get(), priority_entry.get()))
+    # Create Add button
+    add_button = tk.Button(window, text="Add New Task", command=lambda: add_task(name_entry.get(), description_entry.get(), start_date_entry.get(), due_date_entry.get(), priority_entry.get()))
     add_button.pack()
-
-    view_button = tk.Button(window, text="View Tasks", command=lambda: print(view_tasks()))
+    
+    # Create View button
+    view_button = tk.Button(window,text="View All Tasks", command=lambda: print(view_task()))
     view_button.pack()
 
-    delete_button = tk.Button(window, text="Delete Task", command=lambda: delete_task(1)) # Replace 1 with the actual task ID
+    # Create delete button
+    delete_button = tk.Button(window, text="Delete task", command=lambda:delete_task(1))  # Set up 1 to replace it with the actual task ID
     delete_button.pack()
 
-    edit_button = tk.Button(window, text="Edit Task", command=lambda: edit_task(1, "New Name", "New Description", "New Due Date", "New Priority")) # Replace 1 with the actual task ID and update the values
+    # Create Edit button
+    edit_button = tk.Button(window, text="Edit task", command=lambda:edit_task(1, "New Name", "New Description", "New Start Date", "New Due Date", "New Priority"))
     edit_button.pack()
 
-    # Run the window
     window.mainloop()
 
 if __name__ == '__main__':

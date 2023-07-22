@@ -1,113 +1,106 @@
-# Copyright 2020, Brigham Young University-Idaho. All rights reserved.
+import tkinter as tk
+import sqlite3
 
-from receipt import read_dictionary
-from os import path
-from tempfile import mktemp
-from pytest import approx
-import pytest
+def create_task_table():
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS mytasks
+                (id INTEGER PRIMARY KEY, 
+                name TEXT NOT NULL,
+                description TEXT,
+                start_date DATE,
+                due_date DATE,
+                priority INTEGER)''')
+    my_tasks.commit()
+    my_tasks.close()
 
+def add_task(name, description, start_date, due_date, priority):
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("INSERT INTO mytasks (name, description, start_date, due_date, priority) VALUES (?, ?, ?, ?, ?)", (name, description, start_date, due_date, priority))
+    my_tasks.commit()
+    my_tasks.close()
 
-def test_read_dictionary():
-    """Verify that the read_dictionary function works correctly.
-    Parameters: none
-    Return: nothing
-    """
-    PRODUCT_NUM_INDEX = 0
+def delete_task(id):
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("DELETE FROM mytasks WHERE id=?", (id,))
+    my_tasks.commit()
+    my_tasks.close()
 
-    # Verify that the read_dictionary function uses its filename
-    # parameter by doing the following:
-    # 1. Get a filename for a file that doesn't exist.
-    # 2. Call the read_dictionary function with the filename.
-    # 3. Verify that the open function inside the read_dictionary
-    #    function raises a FileNotFoundError.
-    filename = mktemp(dir=".", prefix="not", suffix=".csv")
-    with pytest.raises(FileNotFoundError):
-        read_dictionary(filename, PRODUCT_NUM_INDEX)
-        pytest.fail("read_dictionary function must use its filename parameter")
+def edit_task(id, name, description, start_date, due_date, priority):
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("UPDATE mytasks SET name=?, description=?, start_date=?, due_date=?, priority=? WHERE id=?", (name, description, start_date, due_date, priority, id))
+    my_tasks.commit()
+    my_tasks.close()
 
-    # Call the read_dictionary function and store the returned
-    # dictionary in a variable named products_dict.
-    filename = path.join(path.dirname(__file__), "products.csv")
-    products_dict = read_dictionary(filename, PRODUCT_NUM_INDEX)
+def view_task():
+    my_tasks = sqlite3.connect('tasklist.db')
+    c = my_tasks.cursor()
+    c.execute("SELECT * FROM mytasks")
+    mytasks = c.fetchall()
+    my_tasks.close()
+    return mytasks
 
-    # Verify that the read_dictionary function returns a dictionary.
-    assert isinstance(products_dict, dict), \
-        "read_dictionary function must return a dictionary:" \
-        f" expected a dictionary but found a {type(products_dict)}"
+def main():
+    create_task_table()
 
-    # Verify that the products dictionry contains exactly 16 items.
-    length = len(products_dict)
-    exp_len = 16
-    assert length == exp_len, \
-        "products dictionary has too" \
-        f" {'few' if length < exp_len else 'many'} items:" \
-        f" expected {exp_len} but found {length}"
+    # Create window
+    window = tk.Tk()
+    window.title("DailyTasks")
 
-    # Check each item in the products dictionary.
-    check_product(products_dict, "D150", ["1 gallon milk", 2.85])
-    check_product(products_dict, "D083", ["1 cup yogurt", 0.75])
-    check_product(products_dict, "D215", ["1 lb cheddar cheese", 3.35])
-    check_product(products_dict, "P019", ["iceberg lettuce", 1.15])
-    check_product(products_dict, "P020", ["green leaf lettuce", 1.79])
-    check_product(products_dict, "P021", ["butterhead lettuce", 1.83])
-    check_product(products_dict, "P025", ["8 oz arugula", 2.19])
-    check_product(products_dict, "P143", ["1 lb baby carrots", 1.39])
-    check_product(products_dict, "W231", ["32 oz granola", 3.21])
-    check_product(products_dict, "W112", ["wheat bread", 2.55])
-    check_product(products_dict, "C013", ["twix candy bar", 0.85])
-    check_product(products_dict, "H001", ["8 rolls toilet tissue", 6.45])
-    check_product(products_dict, "H014", ["facial tissue", 2.49])
-    check_product(products_dict, "H020", ["aluminum foil", 2.39])
-    check_product(products_dict, "H021", ["12 oz dish soap", 3.19])
-    check_product(products_dict, "H025", ["toilet cleaner", 4.50])
+    # Create widgets
+    label = tk.Label(window, text="Welcome, I am here to help you manage your tasks with Deadlines and Reminders. YOU CAN DO IT!! :)")
+    label.pack()
 
+    # Create task name
+    name_label = tk.Label(window, text="Write our new task name :3: ")
+    name_label.pack()
+    name_entry = tk.Entry(window)
+    name_entry.pack()
 
-def check_product(products_dict, product_number, expected_value):
-    """Verify that the data for one product number stored in the
-    products dictionary is correct.
+    # Create task details
+    description_label = tk.Label(window, text="Let's keep some details of the task to help us remember!")
+    description_label.pack()
+    description_entry = tk.Entry(window)
+    description_entry.pack()
 
-    Parameters
-        products_dict: a dictionary that contains product data
-        product_number: the product number of the product that this
-            function will verify
-        expected_value: the data that should be in the products
-            dictionary for the product_number
-    Return: nothing
-    """
-    assert product_number in products_dict
-    actual_value = products_dict[product_number]
-    length = len(actual_value)
-    min_len = 2
-    max_len = 3
-    assert min_len <= length and length <= max_len, \
-        f"value list for product {product_number} contains too" \
-        f" {'few' if length < min_len else 'many'} elements:" \
-        f" expected {min_len} or {max_len} elements but found {length}"
+    # Create start_date
+    start_date_label = tk.Label(window, text="Let's set up a start date O.O")
+    start_date_label.pack()
+    start_date_entry = tk.Entry(window)
+    start_date_entry.pack()
 
-    if length == min_len:
-        NAME_INDEX = 0
-        PRICE_INDEX = 1
-    else:
-        NAME_INDEX = 1
-        PRICE_INDEX = 2
+    # Create due_date
+    due_date_label = tk.Label(window, text="Let's set up a due date")
+    due_date_label.pack()
+    due_date_entry = tk.Entry(window)
+    due_date_entry.pack()
 
-    # Verify that the product's name is correct.
-    act_name = actual_value[NAME_INDEX]
-    exp_name = expected_value[0]
-    assert act_name == exp_name, \
-        f"wrong name for product {product_number}: " \
-        f"expected {exp_name} but found {act_name}"
+    # Create priority
+    priority_label = tk.Label(window, text="Let's set up the priority of the task")
+    priority_label.pack()
+    priority_entry = tk.Entry(window)
+    priority_entry.pack()
 
-    # Verify that the product's price is correct.
-    act_price = actual_value[PRICE_INDEX]
-    if isinstance(act_price, str):
-        act_price = float(act_price)
-    exp_price = expected_value[1]
-    assert act_price == approx(exp_price), \
-        f"wrong price for product {product_number}: " \
-        f"expected {exp_price} but found {act_price}"
+    # Create Add button
+    add_button = tk.Button(window, text="Add New Task", command=lambda: add_task(name_entry.get(), description_entry.get(), start_date_entry.get(), due_date_entry.get(), priority_entry.get()))
+    add_button.pack()
+    
+    # Create View button
+    view_button = tk.Button(window,text="View All Tasks", command=lambda: print(view_task()))
+    view_button.pack()
 
+    # Create delete button
+    delete_button = tk.Button(window, text="Delete task", command=lambda:delete_task(1))  # Set up 1 to replace it with the actual task ID
+    delete_button.pack()
 
-# Call the main function that is part of pytest so that the
-# computer will execute the test functions in this file.
-pytest.main(["-v", "--tb=line", "-rN", __file__])
+    # Create Edit button
+    edit_button = tk.Button(window, text="Edit task", command=lambda:edit_task(1, "New Name", "New Description", "New Start Date", "New Due Date", "New Priority"))
+    edit_button.pack()
+
+    window.mainloop()
+
+if __name__ == '__main__':
+    main()

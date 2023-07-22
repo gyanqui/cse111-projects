@@ -1,5 +1,5 @@
 """
-File: L08 Prepare Checkpoint
+File: L08  maybe 09 Prepare Checkpoint
 Author: Gab Yanqui
 Date: 02/28/2023
 Purpose: Practice writing code that reads from a text file into a list. 

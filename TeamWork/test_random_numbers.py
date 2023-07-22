@@ -1,3 +1,12 @@
+"""
+File: L07 Teach: Team Activity
+Author: Gab Yanqui
+Date: 01/31/2023
+Purpose: Test fuction using pytest and assert statements.
+"""
+"""
+Verify that the append_random_numberS function work correctly.
+"""
 
 from random_numbers import append_random_numbers
 import pytest

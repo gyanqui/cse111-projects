@@ -1,0 +1,28 @@
+Please respond thoroughly (at least two sentences for each question) to
+the following three questions.
+
+1. Describe an experience you had this semester where you saw the power of
+functions.
+
+During a team assignment in week 4, I recognized the benefits of using functions in programming when developing the can_size.py
+program. Dividing a program into smaller, single-task functions enhances its organization and helps ensure each step executes as
+intended. This technique improves code readability, modularity, and reusability, leading to more efficient programming practices.
+
+2. In your judgment, what is the value of test functions?
+
+Test functions are an important tool for ensuring that our code works as intended. They allow us to check that our functions
+are returning the expected output for a given input, and help us catch errors or bugs in our code. By writing and running
+test functions regularly, we can build more robust and reliable software that is less likely to break or fail in unexpected ways.
+
+3. Describe your process for troubleshooting and fixing a program that
+has a problem. What is one thing you can do to improve your process?
+
+When troubleshooting and fixing a program, I typically start by identifying the specific issue or error that is occurring. This might
+involve looking at error messages or examining the output of the code to see where things are going wrong. From there, I try to isolate
+the problem by breaking the code down into smaller parts or testing different input values to see where the issue occurs. Once I have
+identified the root cause of the problem, I can make changes to the code to fix the issue and re-test the program to ensure that it is
+working correctly.
+
+One thing that can help improve this process is to use debugging tools, such as a debugger or print statements, to get more insight
+into what is happening in the code. Additionally, writing clear and descriptive comments throughout the code can make it easier to
+understand what each part of the program is doing and help identify where errors might be occurring.
