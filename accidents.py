@@ -10,10 +10,10 @@ DISTRACT_COLUMN = 5
 PHONE_COLUMN = 6
 SPEED_COLUMN = 7
 DUI_COLUMN = 8
-FATIGUE_COLUMN = 9
+FATIGUE_COLUMN = 10
 
 def main():
-    try:    
+    try:
         # Prompt the user for a filename and open that text file.
         filename = input(
                 "Name of file that contains NHTSA data: ")
